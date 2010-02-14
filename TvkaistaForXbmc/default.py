@@ -29,14 +29,8 @@ import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), "resources" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
-import httplib2
-
 from string import split, replace, find
 from xml.dom import minidom
-
-global http
-
-http = httplib2.Http()
 
 def bitrate():
     if xbmcplugin.getSetting("bitrate") == "0":
@@ -85,13 +79,7 @@ def menu():
   listfolder.setInfo('video', {'Title': 'Varasto'})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  #TODO: asetuksiin mahdollisuus laittaa muitakin hakuja suoraan valikkoon
-  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/search/title/elokuva')+"&mode=2"
-  listfolder = xbmcgui.ListItem('Haku: elokuva')
-  listfolder.setInfo('video', {'Title': 'Haku: elokuva'})
-  xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
-
-  u=sys.argv[0]+"?url=Haku&mode=3"
+  u=sys.argv[0]+"?url=Haku&mode=6"
   listfolder = xbmcgui.ListItem('Haku')
   listfolder.setInfo('video', {'Title': 'Haku'})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
@@ -137,7 +125,7 @@ def listprograms(url):
                          xbmcplugin.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
-  #print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
+  print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
   try:
       content = urllib2.urlopen(url+'/'+bitrate()+'.rss').read()
   except urllib2.HTTPError,e:
@@ -283,6 +271,14 @@ def search():
   keyboard = xbmc.Keyboard()
   keyboard.doModal()
   if (keyboard.isConfirmed() and keyboard.getText() != ''):
+    list=xbmcplugin.getSetting("searches").splitlines()
+    try:
+      list.remove(keyboard.getText())
+    except ValueError:
+      pass
+    if len(list)>20: list.pop()
+    list.insert(0,keyboard.getText())
+    xbmcplugin.setSetting("searches","\n".join(list))
     url = 'http://alpha.tvkaista.fi/feed/search/title/%s' % (urllib.quote_plus(keyboard.getText()))
     listprograms(url)
 
@@ -301,6 +297,33 @@ def play(url,title):
   except:
       pass
   
+def listsearches():
+  u=sys.argv[0]+"?url=Haku&mode=3"
+  listfolder = xbmcgui.ListItem('Uusi haku')
+  xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+
+  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/search/title/elokuva')+"&mode=2"
+  listfolder = xbmcgui.ListItem('Haku: elokuva')
+  xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+
+  for i in xbmcplugin.getSetting("searches").splitlines():
+    u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
+    listfolder = xbmcgui.ListItem('Haku: '+i)
+    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+
+  if(xbmcplugin.getSetting("searches") != ""):
+    u=sys.argv[0]+"?url=Haku&mode=7"
+    listfolder = xbmcgui.ListItem('Poista viimeiset haut')
+    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+
+  xbmcplugin.endOfDirectory(int(sys.argv[1]))
+  
+def delsearches():
+  dialog = xbmcgui.Dialog()
+  if(dialog.yesno('Tvkaista', 'Poistetaanko viimeiset haut?')):
+    xbmcplugin.setSetting("searches","")
+    dialog.ok('Tvkaista', 'Viimeiset haut poistettu.','Viimeiset haut kuitenkin näkyvät listassa','kunnes olet poistunut hakutoiminnosta.')
+  xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 params=get_params()
 url=None
@@ -330,4 +353,8 @@ elif mode==4:
         xbmcplugin.openSettings(url=sys.argv[0])
 elif mode==5:
         listdates(url)
+elif mode==6:
+        listsearches()
+elif mode==7:
+        delsearches()
 

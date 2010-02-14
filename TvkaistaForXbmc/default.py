@@ -166,7 +166,7 @@ def listprograms(url):
     pcha=i.getElementsByTagName('source')[0].childNodes[0].nodeValue
     try:
       purl=i.getElementsByTagName('enclosure')[0].attributes['url'].value
-      pat = re.compile(r"http://alpha[.]tvkaista[.]fi/(.*)", re.IGNORECASE).findall(purl)
+      pat = re.compile(r"^http://(.*)", re.IGNORECASE).findall(purl)
     except:
       pat=[]
       pat.append("")
@@ -176,7 +176,7 @@ def listprograms(url):
     else:
       shortdes=pdes
     t=time.localtime(timediff+time.mktime(time.strptime(pdat,"%a, %d %b %Y %H:%M:%S +0000")))
-    urlii = 'http://%s:%s@alpha.tvkaista.fi/%s' % (\
+    urlii = 'http://%s:%s@%s' % (\
             urllib.quote(xbmcplugin.getSetting("username")), \
             urllib.quote(xbmcplugin.getSetting("password")), pat[0])
     nimike = '%s | %s >>> %s (%s)' % (time.strftime("%H:%M",t),ptit,shortdes,pcha)

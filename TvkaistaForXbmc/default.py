@@ -147,7 +147,7 @@ def listprograms(url):
     pass
   try:
     #haetaan aikaero GMT->lokaaliaika. Oletetaan, etta xbmc:n/pythonin aika on oikea lokaaliaika...
-    otherdate=dom.getElementsByTagName('channel')[0].getElementsByTagName('pubDate')[0].childNodes[0].nodeValue
+    otherdate=dom.getElementsByTagName('channel')[0].getElementsByTagName('lastBuildDate')[0].childNodes[0].nodeValue
     timediff=time.time()-time.mktime(time.strptime(otherdate,"%a, %d %b %Y %H:%M:%S +0000"))
   except:
     timediff=0

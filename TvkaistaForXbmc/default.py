@@ -1,6 +1,6 @@
 #xbmc alpha tvkaista plugin
 #
-#Copyright (C) 2009  Viljo Viitanen <viljo.viitanen@iki.fi>
+#Copyright (C) 2009-2010  Viljo Viitanen <viljo.viitanen@iki.fi>
 #Copyright (C) 2008-2009  J. Luukko
 #
 #This program is free software; you can redistribute it and/or
@@ -16,6 +16,13 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+#muutoshistoria:
+#19.12.2009 ensimmainen versio
+#20.12.2009 aikaeron laskeminen bugasi, korjattu
+#5.1.2010 ohjelmien sijainti oli kovakoodattu alpha.tvkaista.fi:n, feedien muuttuessa
+#bugasi, korjattu
+#10.2.2010 paljon muutoksia, lisatty tekstitystuki, thumbnailit, paivamaaravalikko
 
 import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time
 
@@ -34,12 +41,12 @@ http = httplib2.Http()
 def bitrate():
     if xbmcplugin.getSetting("bitrate") == "0":
       return "mp4"
-    elif xbmcplugin.getSetting("bitrate") == "1":
-      return "flv"
     elif xbmcplugin.getSetting("bitrate") == "2":
       return "h264"
     elif xbmcplugin.getSetting("bitrate") == "3":
       return "ts"
+    else:
+      return "flv"
 
 #varmistetaan asetukset
 def settings():
@@ -54,6 +61,7 @@ def settings():
     listfolder = xbmcgui.ListItem('Asetukset')
     listfolder.setInfo('video', {'Title': 'Asetukset'})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 # paavalikko
 def menu():
@@ -93,6 +101,17 @@ def menu():
   listfolder.setInfo('video', {'Title': 'Asetukset'})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
+  vko=['Maanantai','Tiistai','Keskiviikko','Torstai','Perjantai','Lauantai','Sunnuntai']
+  t=time.time()
+  for i in range(1,15):
+    tt=time.localtime(t-86400*i)
+    title='%s %s' % (vko[tt[6]], (time.strftime("%d.%m",tt)))
+    listfolder = xbmcgui.ListItem(title)
+    u=sys.argv[0]+"?url=%d/%d/%d/&mode=5" % (tt[0],tt[1],tt[2])
+    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+
+  xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
 # Parsee kaynnistysparametrit kun skriptaa suoritetaan uudelleen
 def get_params():
   param=[]
@@ -112,8 +131,6 @@ def get_params():
   return param
 
 #Listaa feedin sisaltamat ohjelmat
-#TODO: mediarss-feed, thumbnail (pitaa katsoa onko niiden lataaminen liian hidasta, asetus?)
-#TODO: paivamaaravalikko "edellinen vuorokausi" sijaan
 def listprograms(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
   passman.add_password(None, "http://alpha.tvkaista.fi", xbmcplugin.getSetting("username"), \
@@ -127,24 +144,10 @@ def listprograms(url):
     u=sys.argv[0]
     listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code))
     listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)})
-    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=0)
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return
   dom = minidom.parseString(content)
-  try:
-    links = dom.getElementsByTagName('atom:link')
-    #print "listprogram got links"
-    for i in links:
-      #print "link: "+i.attributes['rel'].value
-      if i.attributes['rel'].value == "prev-archive":
-        #print "href: "+i.attributes['href'].value
-        newurl = re.compile(r"^(.*)/[^/]+[.]rss$", re.IGNORECASE).findall(i.attributes['href'].value)
-        #print "newurl: "+newurl[0]
-        u=sys.argv[0]+"?url="+urllib.quote_plus(newurl[0])+"&mode="+"2"
-        listfolder = xbmcgui.ListItem('Edellinen vuorokausi')
-        listfolder.setInfo('video', {'Title': 'Edellinen vuorokausi'})
-        xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
-  except:
-    pass
   try:
     #haetaan aikaero GMT->lokaaliaika. Oletetaan, etta xbmc:n/pythonin aika on oikea lokaaliaika...
     otherdate=dom.getElementsByTagName('channel')[0].getElementsByTagName('lastBuildDate')[0].childNodes[0].nodeValue
@@ -182,9 +185,18 @@ def listprograms(url):
     nimike = '%s | %s >>> %s (%s)' % (time.strftime("%H:%M",t),ptit,shortdes,pcha)
 
     listitem = xbmcgui.ListItem(label=nimike, iconImage="DefaultVideo.png")
+    try:
+      if pat[0] != "":
+        pid=re.compile(r"/([0-9]+)[.].+$", re.IGNORECASE).findall(pat[0])
+        listitem.setThumbnailImage('http://%s:%s@alpha.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
+            urllib.quote(xbmcplugin.getSetting("username")), \
+            urllib.quote(xbmcplugin.getSetting("password")), pid[0]))
+    except:
+      pass
     listitem.setInfo('video', {'title': nimike, 'plot': pdes, 
                                'date': time.strftime("%d.%m.%Y",t), })
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=urlii,listitem=listitem)
+    u=sys.argv[0]+"?url="+urllib.quote_plus(urlii)+"&mode=0&title="+urllib.quote_plus(nimike.encode('latin1'))
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=listitem)
   xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_DATE)
 #  except:
 #    u=sys.argv[0]
@@ -192,6 +204,44 @@ def listprograms(url):
 #    listfolder.setInfo('video', {'Title': 'www-pyynnon sisallon tulkitseminen ei onnistunut'})
 #    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
   dom.unlink()
+  xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+#haetaan kanavalista, ujutetaan feed-urleihin archive-paivamaara, joka tulee url-parametrina
+def listdates(url):
+  passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+  passman.add_password(None, "http://alpha.tvkaista.fi", xbmcplugin.getSetting("username"), \
+                         xbmcplugin.getSetting("password"))
+  opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
+  urllib2.install_opener(opener)
+  #print "listfeeds avataan: "+url
+  try:
+      content = urllib2.urlopen('http://alpha.tvkaista.fi/feed/channels/').read()
+  except urllib2.HTTPError,e:
+    u=sys.argv[0]
+    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code))
+    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)})
+    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+    return
+#  try:
+  dom = minidom.parseString(content)
+  items = dom.getElementsByTagName('item')
+  ret = []
+  for i in items:
+    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    plin=i.getElementsByTagName('link')[0].childNodes[0].nodeValue
+    datelink=re.sub(r'/feed/','/feed/archives/'+url,plin)
+    #print "plin: " + plin + " datelink: " + datelink
+    u=sys.argv[0]+"?url="+urllib.quote_plus(datelink)+"&mode="+"2"
+    listfolder = xbmcgui.ListItem(ptit)
+    listfolder.setInfo('video', {'Title': ptit})
+    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+#  except:
+#    u=sys.argv[0]
+#    listfolder = xbmcgui.ListItem('www-pyynnon sisallon tulkitseminen ei onnistunut')
+#    listfolder.setInfo('video', {'Title': 'www-pyynnon sisallon tulkitseminen ei onnistunut'})
+#    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
+  dom.unlink()
+  xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 # Listaa feedin sisaltamat feedit
 def listfeeds(url):
@@ -226,20 +276,38 @@ def listfeeds(url):
 #    listfolder.setInfo('video', {'Title': 'www-pyynnon sisallon tulkitseminen ei onnistunut'})
 #    xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
   dom.unlink()
+  xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 # Antaa kayttajalle virtuaalisen nappaimiston ja listaa hakutulokset
 def search():
   keyboard = xbmc.Keyboard()
   keyboard.doModal()
-  if (keyboard.isConfirmed()):
+  if (keyboard.isConfirmed() and keyboard.getText() != ''):
     url = 'http://alpha.tvkaista.fi/feed/search/title/%s' % (urllib.quote_plus(keyboard.getText()))
     listprograms(url)
+
+def play(url,title):
+  play=xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+  play.clear()
+  listitem = xbmcgui.ListItem(title)
+
+  play.add(url,listitem)
+  player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+  player.play(play)
+  try:
+    s=re.sub(r'/([0-9]+)[^/]+$','/\\1.srt',url)
+    print "subtitles "+s
+    player.setSubtitles(s)
+  except:
+      pass
+  
 
 params=get_params()
 url=None
 mode=None
 try:
         url=urllib.unquote_plus(params["url"])
+        title=urllib.unquote_plus(params["title"])
 except:
         pass
 try:
@@ -250,6 +318,8 @@ except:
 if mode==None or url==None or len(url)<1:
         settings()
         
+elif mode==0:
+        play(url,title)
 elif mode==1:
         listfeeds(url)
 elif mode==2:
@@ -258,6 +328,6 @@ elif mode==3:
         search()
 elif mode==4:
         xbmcplugin.openSettings(url=sys.argv[0])
+elif mode==5:
+        listdates(url)
 
-# Kaikki kunnossa, ilmoitetaan etta tassa oli kaikki
-xbmcplugin.endOfDirectory(int(sys.argv[1]))

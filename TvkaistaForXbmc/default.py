@@ -4,7 +4,7 @@
 #Copyright (C) 2008-2009  J. Luukko
 #
 #This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
+#modify it under the terms of get GNU General Public License
 #as published by the Free Software Foundation; either version 2
 #of the License, or (at your option) any later version.
 #
@@ -24,7 +24,8 @@
 #bugasi, korjattu
 #10.2.2010 paljon muutoksia, lisatty tekstitystuki, thumbnailit, paivamaaravalikko
 
-import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time
+import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time, xbmcaddon
+tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaistaforxbmc");
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), "resources" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
@@ -33,18 +34,18 @@ from string import split, replace, find
 from xml.dom import minidom
 
 def bitrate():
-    if xbmcplugin.getSetting("bitrate") == "0":
+    if tvkaista_addon.getSetting("bitrate") == "0":
       return "mp4"
-    elif xbmcplugin.getSetting("bitrate") == "2":
+    elif tvkaista_addon.getSetting("bitrate") == "2":
       return "h264"
-    elif xbmcplugin.getSetting("bitrate") == "3":
+    elif tvkaista_addon.getSetting("bitrate") == "3":
       return "ts"
     else:
       return "flv"
 
 #varmistetaan asetukset
 def settings():
-  if xbmcplugin.getSetting("username") != '' and xbmcplugin.getSetting("password") != '':
+  if tvkaista_addon.getSetting("username") != '' and tvkaista_addon.getSetting("password") != '':
     menu()
   else:
     u=sys.argv[0]+"?url=Asetukset&mode=4"
@@ -121,8 +122,8 @@ def get_params():
 #Listaa feedin sisaltamat ohjelmat
 def listprograms(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  passman.add_password(None, "http://alpha.tvkaista.fi", xbmcplugin.getSetting("username"), \
-                         xbmcplugin.getSetting("password"))
+  passman.add_password(None, "http://alpha.tvkaista.fi", tvkaista_addon.getSetting("username"), \
+                         tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
   print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
@@ -168,8 +169,8 @@ def listprograms(url):
       shortdes=pdes
     t=time.localtime(timediff+time.mktime(time.strptime(pdat,"%a, %d %b %Y %H:%M:%S +0000")))
     urlii = 'http://%s:%s@%s' % (\
-            urllib.quote(xbmcplugin.getSetting("username")), \
-            urllib.quote(xbmcplugin.getSetting("password")), pat[0])
+            urllib.quote(tvkaista_addon.getSetting("username")), \
+            urllib.quote(tvkaista_addon.getSetting("password")), pat[0])
     nimike = '%s | %s >>> %s (%s)' % (time.strftime("%H:%M",t),ptit,shortdes,pcha)
 
     listitem = xbmcgui.ListItem(label=nimike, iconImage="DefaultVideo.png")
@@ -177,8 +178,8 @@ def listprograms(url):
       if pat[0] != "":
         pid=re.compile(r"/([0-9]+)[.].+$", re.IGNORECASE).findall(pat[0])
         listitem.setThumbnailImage('http://%s:%s@alpha.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
-            urllib.quote(xbmcplugin.getSetting("username")), \
-            urllib.quote(xbmcplugin.getSetting("password")), pid[0]))
+            urllib.quote(tvkaista_addon.getSetting("username")), \
+            urllib.quote(tvkaista_addon.getSetting("password")), pid[0]))
     except:
       pass
     listitem.setInfo('video', {'title': nimike, 'plot': pdes, 
@@ -197,8 +198,8 @@ def listprograms(url):
 #haetaan kanavalista, ujutetaan feed-urleihin archive-paivamaara, joka tulee url-parametrina
 def listdates(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  passman.add_password(None, "http://alpha.tvkaista.fi", xbmcplugin.getSetting("username"), \
-                         xbmcplugin.getSetting("password"))
+  passman.add_password(None, "http://alpha.tvkaista.fi", tvkaista_addon.getSetting("username"), \
+                         tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
   #print "listfeeds avataan: "+url
@@ -234,8 +235,8 @@ def listdates(url):
 # Listaa feedin sisaltamat feedit
 def listfeeds(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  passman.add_password(None, "http://alpha.tvkaista.fi", xbmcplugin.getSetting("username"), \
-                         xbmcplugin.getSetting("password"))
+  passman.add_password(None, "http://alpha.tvkaista.fi", tvkaista_addon.getSetting("username"), \
+                         tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
   #print "listfeeds avataan: "+url
@@ -271,7 +272,7 @@ def search():
   keyboard = xbmc.Keyboard()
   keyboard.doModal()
   if (keyboard.isConfirmed() and keyboard.getText() != ''):
-    list=xbmcplugin.getSetting("searches").splitlines()
+    list=tvkaista_addon.getSetting("searches").splitlines()
     try:
       list.remove(keyboard.getText())
     except ValueError:
@@ -306,12 +307,12 @@ def listsearches():
   listfolder = xbmcgui.ListItem('Haku: elokuva')
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  for i in xbmcplugin.getSetting("searches").splitlines():
+  for i in tvkaista_addon.getSetting("searches").splitlines():
     u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
     listfolder = xbmcgui.ListItem('Haku: '+i)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  if(xbmcplugin.getSetting("searches") != ""):
+  if(tvkaista_addon.getSetting("searches") != ""):
     u=sys.argv[0]+"?url=Haku&mode=7"
     listfolder = xbmcgui.ListItem('Poista viimeiset haut')
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
@@ -350,7 +351,7 @@ elif mode==2:
 elif mode==3:
         search()
 elif mode==4:
-        xbmcplugin.openSettings(url=sys.argv[0])
+        tvkaista_addon.openSettings(url=sys.argv[0])
 elif mode==5:
         listdates(url)
 elif mode==6:

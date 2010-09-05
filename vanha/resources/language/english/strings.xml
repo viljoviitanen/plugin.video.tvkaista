@@ -1,0 +1,16 @@
+<strings>
+    <string id="30000">TVkaista Suomi Username</string>
+    <string id="30001">TVkaista Suomi Password</string>
+    <string id="30006">TVkaista Sverige Username</string>
+    <string id="30007">TVkaista Sverige Password</string>
+    <string id="30008">Enable TVkaista Suomi</string>
+    <string id="30009">Enable TVkaista Sverige</string>
+    <string id="30003">Video format</string>
+    <string id="30004">Search</string>
+    <string id="30005">Favourites</string>
+    <string id="30010">Download thumbnails in search</string>
+    <string id="30012">Download thumbnails in watchlist</string>
+    <string id="30013">Download thumbnails in programlisting</string>
+    <string id="30014">Download thumbnails in storage</string>
+    <string id="30015">Download thumbnails in datelisting</string>
+</strings>

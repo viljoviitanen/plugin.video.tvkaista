@@ -1,10 +1,11 @@
 #xbmc alpha tvkaista plugin
 #
 #Copyright (C) 2009-2010  Viljo Viitanen <viljo.viitanen@iki.fi>
+#Copyright (C) 2010       stilester
 #Copyright (C) 2008-2009  J. Luukko
 #
 #This program is free software; you can redistribute it and/or
-#modify it under the terms of get GNU General Public License
+#modify it under the terms of the GNU General Public License
 #as published by the Free Software Foundation; either version 2
 #of the License, or (at your option) any later version.
 #
@@ -23,6 +24,7 @@
 #5.1.2010 ohjelmien sijainti oli kovakoodattu alpha.tvkaista.fi:n, feedien muuttuessa
 #bugasi, korjattu
 #10.2.2010 paljon muutoksia, lisatty tekstitystuki, thumbnailit, paivamaaravalikko
+#6.9.2010 tuki XBMC Dharma beta 1:lle - kiitos stilester!
 
 import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time, xbmcaddon
 tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaistaforxbmc");
@@ -92,7 +94,7 @@ def menu():
 
   vko=['Maanantai','Tiistai','Keskiviikko','Torstai','Perjantai','Lauantai','Sunnuntai']
   t=time.time()
-  for i in range(1,15):
+  for i in range(1,29):
     tt=time.localtime(t-86400*i)
     title='%s %s' % (vko[tt[6]], (time.strftime("%d.%m",tt)))
     listfolder = xbmcgui.ListItem(title)

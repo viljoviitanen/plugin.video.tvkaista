@@ -1,16 +1,7 @@
 <strings>
-    <string id="30000">TVkaista Suomi K‰ytt‰j‰tunnus</string>
+    <string id="30000">TVkaista Suomi Kayttajatunnus</string>
     <string id="30001">TVkaista Suomi Salasana</string>
-    <string id="30006">TVkaista Sverige K‰ytt‰j‰tunnus</string>
-    <string id="30007">TVkaista Sverige Salasana</string>
-    <string id="30008">K‰yt‰n TVkaista Suomea</string>
-    <string id="30009">K‰yt‰n TVkaista Sverige‰</string>
     <string id="30003">Videomuoto</string>
     <string id="30004">Haku</string>
     <string id="30005">Suosikit</string>
-    <string id="30010">Lataa pikkukuvat haussa</string>
-    <string id="30012">Lataa pikkukuvat listassa</string>
-    <string id="30013">Lataa pikkukuvat historiassa ja ohjelmalistauksessa</string>
-    <string id="30014">Lataa pikkukuvat varastossa</string>
-    <string id="30015">Lataa pikkukuvat p‰iv‰m‰‰r‰listauksessa</string>
 </strings>

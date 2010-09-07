@@ -25,9 +25,13 @@
 #bugasi, korjattu
 #10.2.2010 paljon muutoksia, lisatty tekstitystuki, thumbnailit, paivamaaravalikko
 #6.9.2010 tuki XBMC Dharma beta 1:lle - kiitos stilester!
+#7.9.2010 fiksauksia xbmc:n official repoa varten, linux-locale-ongelma fiksattu
+
+import locale
+locale.setlocale(locale.LC_ALL, 'C')
 
 import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time, xbmcaddon
-tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaistaforxbmc");
+tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaista");
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), "resources" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )

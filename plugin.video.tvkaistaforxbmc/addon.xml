@@ -10,7 +10,7 @@
         <platform>all</platform>
         <minversion>31632</minversion>
         <summary>Watch TVKaista.fi with XBMC</summary>        
-        <description>Watch Finnish commercial TVKaista streaming services with XBMC. Requires a TVKaista user account. See http://www.tvkaista.fi for more details.</description>
+        <description>Watch Finnish commercial TVKaista streaming services with XBMC. YLE DVB-subtitles are supported. Requires a TVKaista user account. See http://www.tvkaista.fi for more details.</description>
         <disclaimer>Updated for XMBC Dharma beta 1 by stilester</disclaimer>
     </extension>
 </addon>

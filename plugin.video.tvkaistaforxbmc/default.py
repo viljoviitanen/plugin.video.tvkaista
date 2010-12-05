@@ -21,11 +21,12 @@
 #muutoshistoria:
 #19.12.2009 ensimmainen versio
 #20.12.2009 aikaeron laskeminen bugasi, korjattu
-#5.1.2010 ohjelmien sijainti oli kovakoodattu alpha.tvkaista.fi:n, feedien muuttuessa
+#5.1.2010 ohjelmien sijainti oli kovakoodattu www.tvkaista.fi:n, feedien muuttuessa
 #bugasi, korjattu
 #10.2.2010 paljon muutoksia, lisatty tekstitystuki, thumbnailit, paivamaaravalikko
 #6.9.2010 tuki XBMC Dharma beta 1:lle - kiitos stilester!
 #7.9.2010 fiksauksia xbmc:n official repoa varten, linux-locale-ongelma fiksattu
+#5.12.2010 varasto pois, elokuva-haku etusivulle, alpha->www, tekstitys pois
 
 import locale
 locale.setlocale(locale.LC_ALL, 'C')
@@ -66,24 +67,24 @@ def settings():
 
 # paavalikko
 def menu():
-  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/channels/')+"&mode=1"
+  u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.fi/feed/channels/')+"&mode=1"
   listfolder = xbmcgui.ListItem('Kanavat - tanaan')
   listfolder.setInfo('video', {'Title': "Kanavat"})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/seasonpasses/')+"&mode=1"
+  u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.fi/feed/seasonpasses/')+"&mode=1"
   listfolder = xbmcgui.ListItem('Sarjat')
   listfolder.setInfo('video', {'Title': "Sarjat"})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/playlist')+"&mode=2"
+  u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.fi/feed/playlist')+"&mode=2"
   listfolder = xbmcgui.ListItem('Lista')
   listfolder.setInfo('video', {'Title': 'Lista'})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
-
-  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/storage')+"&mode=2"
-  listfolder = xbmcgui.ListItem('Varasto')
-  listfolder.setInfo('video', {'Title': 'Varasto'})
+  
+  u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.fi/feed/search/title/elokuva')+"&mode=2"
+  listfolder = xbmcgui.ListItem('Elokuvat')
+  listfolder.setInfo('video', {'Title': 'Elokuvat'})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   u=sys.argv[0]+"?url=Haku&mode=6"
@@ -128,7 +129,7 @@ def get_params():
 #Listaa feedin sisaltamat ohjelmat
 def listprograms(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  passman.add_password(None, "http://alpha.tvkaista.fi", tvkaista_addon.getSetting("username"), \
+  passman.add_password(None, "http://www.tvkaista.fi", tvkaista_addon.getSetting("username"), \
                          tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
@@ -183,15 +184,14 @@ def listprograms(url):
     try:
       if pat[0] != "":
         pid=re.compile(r"/([0-9]+)[.].+$", re.IGNORECASE).findall(pat[0])
-        listitem.setThumbnailImage('http://%s:%s@alpha.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
+        listitem.setThumbnailImage('http://%s:%s@www.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
             urllib.quote(tvkaista_addon.getSetting("username")), \
             urllib.quote(tvkaista_addon.getSetting("password")), pid[0]))
     except:
       pass
     listitem.setInfo('video', {'title': nimike, 'plot': pdes, 
                                'date': time.strftime("%d.%m.%Y",t), })
-    u=sys.argv[0]+"?url="+urllib.quote_plus(urlii)+"&mode=0&title="+urllib.quote_plus(nimike.encode('latin1'))
-    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=listitem)
+    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=urlii,listitem=listitem)
   xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_DATE)
 #  except:
 #    u=sys.argv[0]
@@ -204,13 +204,13 @@ def listprograms(url):
 #haetaan kanavalista, ujutetaan feed-urleihin archive-paivamaara, joka tulee url-parametrina
 def listdates(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  passman.add_password(None, "http://alpha.tvkaista.fi", tvkaista_addon.getSetting("username"), \
+  passman.add_password(None, "http://www.tvkaista.fi", tvkaista_addon.getSetting("username"), \
                          tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
   #print "listfeeds avataan: "+url
   try:
-      content = urllib2.urlopen('http://alpha.tvkaista.fi/feed/channels/').read()
+      content = urllib2.urlopen('http://www.tvkaista.fi/feed/channels/').read()
   except urllib2.HTTPError,e:
     u=sys.argv[0]
     listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code))
@@ -241,7 +241,7 @@ def listdates(url):
 # Listaa feedin sisaltamat feedit
 def listfeeds(url):
   passman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-  passman.add_password(None, "http://alpha.tvkaista.fi", tvkaista_addon.getSetting("username"), \
+  passman.add_password(None, "http://www.tvkaista.fi", tvkaista_addon.getSetting("username"), \
                          tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
@@ -286,35 +286,16 @@ def search():
     if len(list)>20: list.pop()
     list.insert(0,keyboard.getText())
     tvkaista_addon.setSetting("searches","\n".join(list))
-    url = 'http://alpha.tvkaista.fi/feed/search/title/%s' % (urllib.quote_plus(keyboard.getText()))
+    url = 'http://www.tvkaista.fi/feed/search/title/%s' % (urllib.quote_plus(keyboard.getText()))
     listprograms(url)
 
-def play(url,title):
-  play=xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-  play.clear()
-  listitem = xbmcgui.ListItem(title)
-
-  play.add(url,listitem)
-  player = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
-  player.play(play)
-  try:
-    s=re.sub(r'/([0-9]+)[^/]+$','/\\1.srt',url)
-    print "subtitles "+s
-    player.setSubtitles(s)
-  except:
-      pass
-  
 def listsearches():
   u=sys.argv[0]+"?url=Haku&mode=3"
   listfolder = xbmcgui.ListItem('Uusi haku')
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/search/title/elokuva')+"&mode=2"
-  listfolder = xbmcgui.ListItem('Haku: elokuva')
-  xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
-
   for i in tvkaista_addon.getSetting("searches").splitlines():
-    u=sys.argv[0]+"?url="+urllib.quote_plus('http://alpha.tvkaista.fi/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
+    u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.fi/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
     listfolder = xbmcgui.ListItem('Haku: '+i)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
@@ -329,7 +310,7 @@ def delsearches():
   dialog = xbmcgui.Dialog()
   if(dialog.yesno('Tvkaista', 'Poistetaanko viimeiset haut?')):
     tvkaista_addon.setSetting("searches","")
-    dialog.ok('Tvkaista', 'Viimeiset haut poistettu.','Viimeiset haut kuitenkin nakyvat listassa','kunnes olet poistunut hakutoiminnosta.')
+    dialog.ok('Tvkaista', 'Viimeiset haut poistettu.')
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 params=get_params()
@@ -348,8 +329,6 @@ except:
 if mode==None or url==None or len(url)<1:
         settings()
         
-elif mode==0:
-        play(url,title)
 elif mode==1:
         listfeeds(url)
 elif mode==2:

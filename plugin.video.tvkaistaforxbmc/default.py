@@ -1,4 +1,4 @@
-#xbmc alpha tvkaista plugin
+#xbmc tvkaista.fi plugin
 #
 #Copyright (C) 2009-2010  Viljo Viitanen <viljo.viitanen@iki.fi>
 #Copyright (C) 2010       stilester
@@ -21,20 +21,21 @@
 #muutoshistoria:
 #19.12.2009 ensimmainen versio
 #20.12.2009 aikaeron laskeminen bugasi, korjattu
-#5.1.2010 ohjelmien sijainti oli kovakoodattu www.tvkaista.fi:n, feedien muuttuessa
+#5.1.2010 ohjelmien sijainti oli kovakoodattu alpha.tvkaista.fi:n, feedien muuttuessa
 #bugasi, korjattu
 #10.2.2010 paljon muutoksia, lisatty tekstitystuki, thumbnailit, paivamaaravalikko
 #6.9.2010 tuki XBMC Dharma beta 1:lle - kiitos stilester!
 #7.9.2010 fiksauksia xbmc:n official repoa varten, linux-locale-ongelma fiksattu
 #5.12.2010 varasto pois, elokuva-haku etusivulle, alpha->www, tekstitys pois
+#5.12.2010 lisays ja poisto katselulistalta ja sarjoista - kiitos Markku Lamminluoto!
 
 import locale
 locale.setlocale(locale.LC_ALL, 'C')
 
-import xbmcgui, urllib, urllib2 , re, os, xbmcplugin, htmlentitydefs, time, xbmcaddon
+import xbmcgui, urllib, urllib2, cookielib , re, os, xbmcplugin, htmlentitydefs, time, xbmcaddon
 tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaista");
 
-BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), "resources" ) )
+BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( tvkaista_addon.getAddonInfo('path'), "resources" ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 
 from string import split, replace, find
@@ -105,7 +106,6 @@ def menu():
     listfolder = xbmcgui.ListItem(title)
     u=sys.argv[0]+"?url=%d/%d/%d/&mode=5" % (tt[0],tt[1],tt[2])
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
-
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 # Parsee kaynnistysparametrit kun skriptaa suoritetaan uudelleen
@@ -187,6 +187,26 @@ def listprograms(url):
         listitem.setThumbnailImage('http://%s:%s@www.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
             urllib.quote(tvkaista_addon.getSetting("username")), \
             urllib.quote(tvkaista_addon.getSetting("password")), pid[0]))
+        if url.find('/feed/playlist') > 0:
+          label='Poista Listalta'
+          mode=9
+        else:
+          label='Lisaa Listalle'
+          mode=8
+        if url.find('/feed/seasonpasses/') > 0:
+          se = re.compile(r"/feed/seasonpasses/([0-9]+)", re.IGNORECASE).findall(url)
+          label2='Poista Sarjoista'
+          mode2=11
+          id2=se[0]
+        else:
+          label2='Lisaa Sarjoihin'
+          mode2=10
+          id2=pid[0]
+        listitem.addContextMenuItems([
+            ('Ohjelman tiedot','XBMC.Action(Info)',),
+            (label,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode,pid[0] ),),
+            (label2,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode2,id2 ),
+            )], True )
     except:
       pass
     listitem.setInfo('video', {'title': nimike, 'plot': pdes, 
@@ -311,7 +331,33 @@ def delsearches():
   if(dialog.yesno('Tvkaista', 'Poistetaanko viimeiset haut?')):
     tvkaista_addon.setSetting("searches","")
     dialog.ok('Tvkaista', 'Viimeiset haut poistettu.')
-  xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+def addremove(action,id):
+  opts = {'action': 'login', 'username': tvkaista_addon.getSetting("username"), \
+          'password': tvkaista_addon.getSetting("password"), 'rememberme':'on'}
+  cj = cookielib.CookieJar()
+  opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+  r = opener.open('http://www.tvkaista.fi/login/', urllib.urlencode(opts))
+  dialog = xbmcgui.Dialog()
+  try:
+    if action==1:
+      r = opener.open("http://www.tvkaista.fi/recordings/?action=addtoplaylist&id=%s"%id)
+      dialog.ok('Tvkaista', 'Ohjelma lisatty listalle.')
+    elif action==2:
+      r = opener.open("http://www.tvkaista.fi/recordings/?action=removefromplaylist&id=%s"%id)
+      dialog.ok('Tvkaista', 'Ohjelma poistettu listalta.')
+    elif action==3:
+      r = opener.open("http://www.tvkaista.fi/recordings/?action=addseasonpass&id=%s"%id)
+      dialog.ok('Tvkaista', 'Ohjelma lisatty sarjoihin')
+    elif action==4:
+      r = opener.open("http://www.tvkaista.fi/recordings/?action=removeseasonpass&spid=%s"%id)
+      dialog.ok('Tvkaista', 'Ohjelma poistettu sarjoista.')
+    else:
+      dialog.ok('Tvkaista', 'Ohjelmavirhe!')
+  except Error:
+      dialog.ok('Tvkaista', 'Toiminto ei onnistunut!')
+
+#main program
 
 params=get_params()
 url=None
@@ -343,4 +389,12 @@ elif mode==6:
         listsearches()
 elif mode==7:
         delsearches()
+elif mode==8:
+        addremove(1,url)
+elif mode==9:
+        addremove(2,url)
+elif mode==10:
+        addremove(3,url)
+elif mode==11:
+        addremove(4,url)
 

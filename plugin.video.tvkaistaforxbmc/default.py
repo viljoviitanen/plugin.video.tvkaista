@@ -147,7 +147,7 @@ def listprograms(url):
                          tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
-  print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
+  #print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
   try:
       content = urllib2.urlopen(url+'/'+bitrate()+'.rss').read()
   except urllib2.HTTPError,e:
@@ -168,6 +168,9 @@ def listprograms(url):
 #  try:
   items = dom.getElementsByTagName('item')
   ret = []
+  mycookie=urllib.quote_plus(proxycookie())
+  myusername=urllib.quote(tvkaista_addon.getSetting("username"))
+  mypassword=urllib.quote(tvkaista_addon.getSetting("password"))
   for i in items:
     ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
 #    print "in "+ptit.encode("utf-8")
@@ -190,8 +193,7 @@ def listprograms(url):
       shortdes=pdes
     t=time.localtime(timediff+time.mktime(time.strptime(pdat,"%a, %d %b %Y %H:%M:%S +0000")))
     urlii = 'http://%s:%s@%s|Cookie=preferred_servers%%3D%s' % (\
-            urllib.quote(tvkaista_addon.getSetting("username")), \
-            urllib.quote(tvkaista_addon.getSetting("password")), pat[0],urllib.quote_plus(proxycookie()))
+            myusername, mypassword, pat[0],mycookie)
     nimike = '%s | %s >>> %s (%s)' % (time.strftime("%H:%M",t),ptit,shortdes,pcha)
 
     listitem = xbmcgui.ListItem(label=nimike, iconImage="DefaultVideo.png")
@@ -199,8 +201,7 @@ def listprograms(url):
       if pat[0] != "":
         pid=re.compile(r"/([0-9]+)[.].+$", re.IGNORECASE).findall(pat[0])
         listitem.setThumbnailImage('http://%s:%s@www.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
-            urllib.quote(tvkaista_addon.getSetting("username")), \
-            urllib.quote(tvkaista_addon.getSetting("password")), pid[0]))
+            myusername, mypassword, pid[0]))
         if url.find('/feed/playlist') > 0:
           label='Poista Listalta'
           mode=9

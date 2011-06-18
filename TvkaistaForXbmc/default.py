@@ -175,9 +175,9 @@ def listprograms(url):
 
     listitem = xbmcgui.ListItem(label=nimike, iconImage="DefaultVideo.png")
     try:
-      if pat[0] != "":
-        pid=re.compile(r"/([0-9]+)[.].+$", re.IGNORECASE).findall(pat[0])
-        listitem.setThumbnailImage('http://%s:%s@www.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
+        pid=re.compile(r"([0-9]+)", re.IGNORECASE).findall(i.getElementsByTagName('link')[0].childNodes[0].nodeValue)
+        if pat[0] != "":
+          listitem.setThumbnailImage('http://%s:%s@www.tvkaista.fi/feed/thumbnails/%s.jpg' % (\
             urllib.quote(xbmcplugin.getSetting("username")), \
             urllib.quote(xbmcplugin.getSetting("password")), pid[0]))
         if url.find('/feed/playlist') > 0:
@@ -195,11 +195,15 @@ def listprograms(url):
            label2='Lisaa Sarjoihin'
            mode2=10
            id2=pid[0]
+        flvurl='http://%s:%s@www.tvkaista.fi/recordings/download/%s.flv' % (\
+            urllib.quote(xbmcplugin.getSetting("username")), \
+            urllib.quote(xbmcplugin.getSetting("password")), pid[0])
         listitem.addContextMenuItems([
              ('Ohjelman tiedot','XBMC.Action(Info)',),
              (label,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode,pid[0] ),),
-             (label2,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode2,id2 ),
-             )], True )
+             (label2,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode2,id2 ),),
+             ("Toista 1M laadulla","XBMC.PlayMedia(%s)"%flvurl,),
+             ], True )
     except:
       pass
     listitem.setInfo('video', {'title': nimike, 'plot': pdes, 

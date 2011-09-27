@@ -1,3 +1,5 @@
+[B]3.0.1[/B]
+- always show times in Finnish time
 [B]3.0.0[/B]
 - Update for Eden (11.0), no real changes
 [B]2.2.0[/B]

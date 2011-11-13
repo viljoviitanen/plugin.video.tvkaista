@@ -30,6 +30,7 @@
 #5.12.2010 lisays ja poisto katselulistalta ja sarjoista - kiitos Markku Lamminluoto!
 #7.1.2011 tuki tvkaistan proxyille
 #11.8.2011 naytetaan aika aina Suomen ajassa
+#13.11.2011 proxytuki pois tarpeettomana
 
 import locale
 locale.setlocale(locale.LC_ALL, 'C')
@@ -52,19 +53,6 @@ def bitrate():
       return "ts"
     else:
       return "flv"
-
-#tvkaista webikayttoliittymasta asetukset-sivulta.
-def proxycookie():
-    if tvkaista_addon.getSetting("proxy") == "1":
-      return "721600"
-    elif tvkaista_addon.getSetting("proxy") == "2":
-      return "7064662+909967"
-    elif tvkaista_addon.getSetting("proxy") == "3":
-      return "7134762+5332710"
-    elif tvkaista_addon.getSetting("proxy") == "4":
-      return "8031916+6913675"
-    else:
-      return "-1"
 
 #varmistetaan asetukset
 def settings():
@@ -196,7 +184,6 @@ def listprograms(url):
 #  try:
   items = dom.getElementsByTagName('item')
   ret = []
-  mycookie=urllib.quote_plus(proxycookie())
   myusername=urllib.quote(tvkaista_addon.getSetting("username"))
   mypassword=urllib.quote(tvkaista_addon.getSetting("password"))
   for i in items:
@@ -226,8 +213,8 @@ def listprograms(url):
       timediff=7200
     t=time.gmtime(tt+timediff)
 
-    urlii = 'http://%s:%s@%s|Cookie=preferred_servers%%3D%s' % (\
-            myusername, mypassword, pat[0],mycookie)
+    urlii = 'http://%s:%s@%s' % (\
+            myusername, mypassword, pat[0])
     nimike = '%s | %s >>> %s (%s)' % (time.strftime("%H:%M",t),ptit,shortdes,pcha)
 
     listitem = xbmcgui.ListItem(label=nimike, iconImage="DefaultVideo.png")

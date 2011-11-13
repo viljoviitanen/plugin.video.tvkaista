@@ -30,7 +30,7 @@
 #5.12.2010 lisays ja poisto katselulistalta ja sarjoista - kiitos Markku Lamminluoto!
 #7.1.2011 tuki tvkaistan proxyille
 #11.8.2011 naytetaan aika aina Suomen ajassa
-#13.11.2011 proxytuki pois tarpeettomana
+#13.11.2011 proxytuki pois tarpeettomana, sarjojen sorttaus
 
 import locale
 locale.setlocale(locale.LC_ALL, 'C')
@@ -264,7 +264,7 @@ def listdates(url):
                          tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
   urllib2.install_opener(opener)
-  #print "listfeeds avataan: "+url
+  #print "listdates avataan: "+url
   try:
       content = urllib2.urlopen('http://www.tvkaista.fi/feed/channels/').read()
   except urllib2.HTTPError,e:
@@ -313,6 +313,8 @@ def listfeeds(url):
 #  try:
   dom = minidom.parseString(content)
   items = dom.getElementsByTagName('item')
+  if "/feed/seasonpasses" in url:
+    items.sort(key=lambda i: i.getElementsByTagName('title')[0].childNodes[0].nodeValue)
   ret = []
   for i in items:
     ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue

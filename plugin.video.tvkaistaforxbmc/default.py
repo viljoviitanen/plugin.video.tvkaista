@@ -32,6 +32,7 @@
 #11.8.2011 naytetaan aika aina Suomen ajassa
 #13.11.2011 proxytuki pois tarpeettomana, sarjojen sorttaus
 #24.11.2012 bugikorjaus, lisatty oma user-agent tvkaistan dokumentaation mukaan
+#           fiksumpi virheilmoitus vaarasta kayttajatunnuksesta/salasanasta
 
 import locale
 locale.setlocale(locale.LC_ALL, 'C')
@@ -181,9 +182,13 @@ def listprograms(url):
       request = urllib2.Request(url+needslash+bitrate()+'.rss', headers=MYHEADERS)
       content = opener.open(request).read()
   except urllib2.HTTPError,e:
+    if e.code == 401:
+      desc=" (virheellinen kayttajatunnus tai salasana)"
+    else:
+      desc=""
     u=sys.argv[0]
-    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code))
-    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)})
+    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code)+desc)
+    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)+desc})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=0)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return
@@ -276,9 +281,13 @@ def listdates(url):
       request = urllib2.Request('http://www.tvkaista.fi/feed/channels/', headers=MYHEADERS)
       content = opener.open(request).read()
   except urllib2.HTTPError,e:
+    if e.code == 401:
+      desc=" (virheellinen kayttajatunnus tai salasana)"
+    else:
+      desc=""
     u=sys.argv[0]
-    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code))
-    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)})
+    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code)+desc)
+    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)+desc})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return
@@ -314,9 +323,13 @@ def listfeeds(url):
       request = urllib2.Request(url, headers=MYHEADERS)
       content = opener.open(request).read()
   except urllib2.HTTPError,e:
+    if e.code == 401:
+      desc=" (virheellinen kayttajatunnus tai salasana)"
+    else:
+      desc=""
     u=sys.argv[0]
-    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code))
-    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)})
+    listfolder = xbmcgui.ListItem('www-pyynto ei onnistunut '+str(e.code)+desc)
+    listfolder.setInfo('video', {'Title': 'www-pyynto ei onnistunut '+str(e.code)+desc})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return

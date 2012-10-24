@@ -31,7 +31,7 @@
 #7.1.2011 tuki tvkaistan proxyille
 #11.8.2011 naytetaan aika aina Suomen ajassa
 #13.11.2011 proxytuki pois tarpeettomana, sarjojen sorttaus
-#24.11.2012 bugikorjaus, lisatty oma user-agent tvkaistan dokumentaation mukaan
+#24.10.2012 bugikorjaus, lisatty oma user-agent tvkaistan dokumentaation mukaan
 #           fiksumpi virheilmoitus vaarasta kayttajatunnuksesta/salasanasta
 
 import locale

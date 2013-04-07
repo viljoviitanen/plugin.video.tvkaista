@@ -178,7 +178,7 @@ def listprograms(url):
   passman.add_password(None, "http://www.tvkaista.fi", tvkaista_addon.getSetting("username"), \
                          tvkaista_addon.getSetting("password"))
   opener = urllib2.build_opener(urllib2.HTTPBasicAuthHandler(passman))
-  print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
+  #print "listprograms avataan: "+url+'/'+bitrate()+'.rss'
   try:
       if url.endswith('/'):
         needslash=''
@@ -206,7 +206,7 @@ def listprograms(url):
   mypassword=urllib.quote(tvkaista_addon.getSetting("password"))
   for i in items:
     ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
-    print "in "+ptit.encode("utf-8")
+    #print "in "+ptit.encode("utf-8")
     try:
       pdes=i.getElementsByTagName('description')[0].childNodes[0].nodeValue
     except:
@@ -215,7 +215,7 @@ def listprograms(url):
     pcha=i.getElementsByTagName('source')[0].childNodes[0].nodeValue
     try:
       purl=i.getElementsByTagName('enclosure')[0].attributes['url'].value
-      print "   purl: "+purl.encode("utf-8")
+      #print "   purl: "+purl.encode("utf-8")
       pat = re.compile(r"^http://(.*)", re.IGNORECASE).findall(purl)
     except:
       pat=[]

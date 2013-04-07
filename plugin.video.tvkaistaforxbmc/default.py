@@ -34,7 +34,7 @@
 #13.11.2011 proxytuki pois tarpeettomana, sarjojen sorttaus
 #24.10.2012 bugikorjaus, lisatty oma user-agent tvkaistan dokumentaation mukaan
 #           fiksumpi virheilmoitus vaarasta kayttajatunnuksesta/salasanasta
-#7.4.2013 Version 3.0.5. Add "search similar named" to context menu. 
+#7.4.2013 Version 4.0.0. Add "search similar named" to context menu. 
 #         Add proper umlauts. Change code documentation to English.
 
 #tvkaista api documentation is at https://code.google.com/p/tvkaista-api/
@@ -45,7 +45,7 @@ locale.setlocale(locale.LC_ALL, 'C')
 import xbmcgui, urllib, urllib2, cookielib , re, os, xbmcplugin, htmlentitydefs, time, xbmcaddon, calendar
 tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaista");
 
-VERSION = "3.0.5"
+VERSION = "4.0.0"
 MYHEADERS = { 'User-Agent': "tvkaista-xbmc version "+VERSION+";" }
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( tvkaista_addon.getAddonInfo('path'), "resources" ) )

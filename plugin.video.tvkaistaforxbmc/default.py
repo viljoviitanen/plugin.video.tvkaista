@@ -36,6 +36,7 @@
 #           fiksumpi virheilmoitus vaarasta kayttajatunnuksesta/salasanasta
 #7.4.2013 Version 4.0.0. Add "search similar named" to context menu. 
 #         Add proper umlauts. Change code documentation to English.
+#8.4.2013 Add support for new tvkaista 1M mpeg4 stream
 
 #tvkaista api documentation is at https://code.google.com/p/tvkaista-api/
 
@@ -62,7 +63,7 @@ def bitrate():
     elif tvkaista_addon.getSetting("bitrate") == "3":
       return "ts"
     else:
-      return "flv"
+      return "mpeg4"
 
 #display settings if username and password are not set
 def settings():

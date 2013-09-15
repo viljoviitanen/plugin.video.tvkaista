@@ -15,9 +15,9 @@
         <description lang="fi">Katso kaupallista TVKaista.fi -tv-tallenninta XBMC:llä. Tarvitsee TVKaista-käyttäjätunnuksen. Lisätietoja: http://www.tvkaista.fi</description>
         <disclaimer lang="en">Updated for XBMC Dharma beta 1 by stilester</disclaimer>
         <disclaimer lang="fi">Päivittänyt XBMC Dharma beta 1:lle stilester</disclaimer>
+        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+        <source>https://github.com/viljoviitanen/plugin.video.tvkaista</source>
+        <website>https://github.com/viljoviitanen/plugin.video.tvkaista</website>
+        <email>viljo.viitanen@gmail.com</email>
     </extension>
-    <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
-    <source>https://github.com/viljoviitanen/plugin.video.tvkaista</source>
-    <website>https://github.com/viljoviitanen/plugin.video.tvkaista</website>
-    <email>viljo.viitanen@gmail.com</email>
 </addon>

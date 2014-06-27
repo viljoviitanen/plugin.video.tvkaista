@@ -2,6 +2,7 @@
 # This Python file uses the following encoding: utf-8
 #
 #Copyright (C) 2009-2014  Viljo Viitanen <viljo.viitanen@iki.fi>
+#Copyright (C) 2014       sampov2
 #Copyright (C) 2010       stilester
 #Copyright (C) 2008-2009  J. Luukko
 #

@@ -34,7 +34,7 @@
 #13.11.2011 proxytuki pois tarpeettomana, sarjojen sorttaus
 #24.10.2012 bugikorjaus, lisatty oma user-agent tvkaistan dokumentaation mukaan
 #           fiksumpi virheilmoitus vaarasta kayttajatunnuksesta/salasanasta
-#7.4.2013 Version 4.0.0. Add "search similar named" to context menu. 
+#7.4.2013 Version 4.0.0. Add "search similar named" to context menu.
 #         Add proper umlauts. Change code documentation to English.
 #8.4.2013 Add support for new tvkaista 1M mpeg4 stream
 #15.9.2013 Version 4.0.1, bugfix with username+password quoting
@@ -98,7 +98,7 @@ def menu():
   listfolder = xbmcgui.ListItem('Lista')
   listfolder.setInfo('video', {'Title': 'Lista'})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
-  
+
   u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/title/elokuva')+"&mode=2"
   listfolder = xbmcgui.ListItem('Elokuvat')
   listfolder.setInfo('video', {'Title': 'Elokuvat'})
@@ -208,7 +208,10 @@ def listprograms(url):
   myusername=urllib.quote_plus(tvkaista_addon.getSetting("username"))
   mypassword=urllib.quote_plus(tvkaista_addon.getSetting("password"))
   for i in items:
-    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    try:
+      ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    except:
+      ptit="?"
     #print "in "+ptit.encode("utf-8")
     try:
       pdes=i.getElementsByTagName('description')[0].childNodes[0].nodeValue
@@ -273,7 +276,7 @@ def listprograms(url):
         listitem.addContextMenuItems(menuitems, True )
     except:
       pass
-    listitem.setInfo('video', {'title': nimike, 'plot': pdes, 
+    listitem.setInfo('video', {'title': nimike, 'plot': pdes,
                                'date': time.strftime("%d.%m.%Y",t), })
     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=urlii,listitem=listitem)
   xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_DATE)
@@ -312,7 +315,10 @@ def listdates(date):
   items = dom.getElementsByTagName('item')
   ret = []
   for i in items:
-    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    try:
+      ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    except:
+      ptit="?"
     plin=i.getElementsByTagName('link')[0].childNodes[0].nodeValue
     datelink=re.sub(r'/feed/','/feed/archives/'+date,plin)
     #print "plin: " + plin + " datelink: " + datelink
@@ -356,7 +362,10 @@ def listfeeds(url):
     items.sort(key=lambda i: i.getElementsByTagName('title')[0].childNodes[0].nodeValue)
   ret = []
   for i in items:
-    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    try:
+      ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    except:
+      ptit="?"
     plin=i.getElementsByTagName('link')[0].childNodes[0].nodeValue
     u=sys.argv[0]+"?url="+urllib.quote_plus(plin)+"&mode="+"2"
     listfolder = xbmcgui.ListItem(ptit)
@@ -403,7 +412,7 @@ def listsearches():
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
-  
+
 #delete stored searches
 def delsearches():
   dialog = xbmcgui.Dialog()
@@ -460,7 +469,7 @@ except:
 
 if mode==None or url==None or len(url)<1:
         settings()
-        
+
 elif mode==1:
         listfeeds(url)
 elif mode==2:
@@ -483,4 +492,3 @@ elif mode==10:
         addremove(3,url)
 elif mode==11:
         addremove(4,url)
-

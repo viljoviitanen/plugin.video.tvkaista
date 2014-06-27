@@ -208,7 +208,10 @@ def listprograms(url):
   myusername=urllib.quote_plus(tvkaista_addon.getSetting("username"))
   mypassword=urllib.quote_plus(tvkaista_addon.getSetting("password"))
   for i in items:
-    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    try:
+      ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    except:
+      ptit="?"
     #print "in "+ptit.encode("utf-8")
     try:
       pdes=i.getElementsByTagName('description')[0].childNodes[0].nodeValue
@@ -312,7 +315,10 @@ def listdates(date):
   items = dom.getElementsByTagName('item')
   ret = []
   for i in items:
-    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    try:
+      ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    except:
+      ptit="?"
     plin=i.getElementsByTagName('link')[0].childNodes[0].nodeValue
     datelink=re.sub(r'/feed/','/feed/archives/'+date,plin)
     #print "plin: " + plin + " datelink: " + datelink
@@ -356,7 +362,10 @@ def listfeeds(url):
     items.sort(key=lambda i: i.getElementsByTagName('title')[0].childNodes[0].nodeValue)
   ret = []
   for i in items:
-    ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    try:
+      ptit=i.getElementsByTagName('title')[0].childNodes[0].nodeValue
+    except:
+      ptit="?"
     plin=i.getElementsByTagName('link')[0].childNodes[0].nodeValue
     u=sys.argv[0]+"?url="+urllib.quote_plus(plin)+"&mode="+"2"
     listfolder = xbmcgui.ListItem(ptit)

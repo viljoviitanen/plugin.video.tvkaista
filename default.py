@@ -40,6 +40,7 @@
 #8.4.2013 Add support for new tvkaista 1M mpeg4 stream
 #15.9.2013 Version 4.0.1, bugfix with username+password quoting
 #31.3.2014 Version 4.0.2, change from tvkaista.fi to tvkaista.com
+#26.6.2014 Added support for searching in descriptions by prefixing search terms with "!"
 
 #tvkaista api documentation is at https://code.google.com/p/tvkaista-api/
 
@@ -247,7 +248,9 @@ def listprograms(url):
     try:
       if pat[0] != "":
         pid=re.compile(r"/([0-9]+)[.].+$", re.IGNORECASE).findall(pat[0])
-        listitem.setThumbnailImage('http://%s:%s@www.tvkaista.com/feed/thumbnails/%s.jpg' % (\
+#        listitem.setThumbnailImage('http://%s:%s@www.tvkaista.com/feed/thumbnails/%s.jpg' % (\
+#            myusername, mypassword, pid[0]))
+        listitem.setThumbnailImage('http://%s:%s@www.tvkaista.com/resources/recordings/screengrabs/%s.jpg' % (\
             myusername, mypassword, pid[0]))
         if url.find('/feed/playlist') > 0:
           label='Poista Listalta'
@@ -270,8 +273,8 @@ def listprograms(url):
             (label2,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode2,id2 ),),
         ]
         if url.find('/feed/search') == -1 and url.find('/feed/seasonpasses/') == -1:
-	  search=ptit.split(':')[0].encode('utf-8')
-	  #double encoding cos it gets decoded twice.
+    search=ptit.split(':')[0].encode('utf-8')
+    #double encoding cos it gets decoded twice.
           menuitems.append(('Etsi samannimisiä','XBMC.Container.Update(%s?mode=%d&url=%s)'%
             (sys.argv[0],2,'http://www.tvkaista.com/feed/search/title/'+urllib.quote_plus(urllib.quote_plus(search)) ),))
         listitem.addContextMenuItems(menuitems, True )
@@ -393,7 +396,11 @@ def search():
     if len(list)>20: list.pop()
     list.insert(0,keyboard.getText())
     tvkaista_addon.setSetting("searches","\n".join(list))
-    url = 'http://www.tvkaista.com/feed/search/title/%s' % (urllib.quote_plus(keyboard.getText()))
+    txt=keyboard.getText()
+    if txt[0] == '!':
+      url = 'http://www.tvkaista.com/feed/search/either/%s' % (urllib.quote_plus(txt[1:]))
+    else:
+      url = 'http://www.tvkaista.com/feed/search/title/%s' % (urllib.quote_plus(txt))
     listprograms(url)
 
 #list searches that are stored in plugin settings
@@ -403,7 +410,10 @@ def listsearches():
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   for i in tvkaista_addon.getSetting("searches").splitlines():
-    u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
+    if i[0] == '!':
+      u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/either/'+urllib.quote_plus(i[1:]))+"&mode=2"
+    else:
+      u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
     listfolder = xbmcgui.ListItem('Haku: '+i)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 

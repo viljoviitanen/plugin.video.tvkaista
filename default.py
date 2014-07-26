@@ -273,8 +273,8 @@ def listprograms(url):
             (label2,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode2,id2 ),),
         ]
         if url.find('/feed/search') == -1 and url.find('/feed/seasonpasses/') == -1:
-    search=ptit.split(':')[0].encode('utf-8')
-    #double encoding cos it gets decoded twice.
+          search=ptit.split(':')[0].encode('utf-8')
+          #double encoding cos it gets decoded twice.
           menuitems.append(('Etsi samannimisiä','XBMC.Container.Update(%s?mode=%d&url=%s)'%
             (sys.argv[0],2,'http://www.tvkaista.com/feed/search/title/'+urllib.quote_plus(urllib.quote_plus(search)) ),))
         listitem.addContextMenuItems(menuitems, True )

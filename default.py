@@ -40,7 +40,7 @@
 #8.4.2013 Add support for new tvkaista 1M mpeg4 stream
 #15.9.2013 Version 4.0.1, bugfix with username+password quoting
 #31.3.2014 Version 4.0.2, change from tvkaista.fi to tvkaista.com
-#26.6.2014 Added support for searching in descriptions by prefixing search terms with "!"
+#26.6.2014 Changed search to searching both title and description all the time.
 
 #tvkaista api documentation is at https://code.google.com/p/tvkaista-api/
 
@@ -396,11 +396,7 @@ def search():
     if len(list)>20: list.pop()
     list.insert(0,keyboard.getText())
     tvkaista_addon.setSetting("searches","\n".join(list))
-    txt=keyboard.getText()
-    if txt[0] == '!':
-      url = 'http://www.tvkaista.com/feed/search/either/%s' % (urllib.quote_plus(txt[1:]))
-    else:
-      url = 'http://www.tvkaista.com/feed/search/title/%s' % (urllib.quote_plus(txt))
+    url = 'http://www.tvkaista.com/feed/search/either/%s' % (urllib.quote_plus(keyboard.getText()))
     listprograms(url)
 
 #list searches that are stored in plugin settings
@@ -410,10 +406,7 @@ def listsearches():
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   for i in tvkaista_addon.getSetting("searches").splitlines():
-    if i[0] == '!':
-      u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/either/'+urllib.quote_plus(i[1:]))+"&mode=2"
-    else:
-      u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/title/'+urllib.quote_plus(i))+"&mode=2"
+    u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/either/'+urllib.quote_plus(i))+"&mode=2"
     listfolder = xbmcgui.ListItem('Haku: '+i)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 

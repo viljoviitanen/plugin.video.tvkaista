@@ -2,6 +2,7 @@
 # This Python file uses the following encoding: utf-8
 #
 #Copyright (C) 2009-2014  Viljo Viitanen <viljo.viitanen@iki.fi>
+#Copyright (C) 2014       grinsted
 #Copyright (C) 2014       sampov2
 #Copyright (C) 2010       stilester
 #Copyright (C) 2008-2009  J. Luukko
@@ -41,6 +42,7 @@
 #15.9.2013 Version 4.0.1, bugfix with username+password quoting
 #31.3.2014 Version 4.0.2, change from tvkaista.fi to tvkaista.com
 #26.6.2014 Changed search to searching both title and description all the time.
+#27.6.2014 Version 4.1.0, Changed hardcoded strings to translated ones
 
 #tvkaista api documentation is at https://code.google.com/p/tvkaista-api/
 
@@ -51,7 +53,7 @@ import xbmcgui, urllib, urllib2, cookielib , re, os, xbmcplugin, htmlentitydefs,
 tvkaista_addon = xbmcaddon.Addon("plugin.video.tvkaista");
 language = tvkaista_addon.getLocalizedString
 
-VERSION = "4.0.2"
+VERSION = "4.1.0"
 MYHEADERS = { 'User-Agent': "tvkaista-xbmc version "+VERSION+";" }
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( tvkaista_addon.getAddonInfo('path'), "resources" ) )
@@ -76,48 +78,48 @@ def settings():
     menu()
   else:
     u=sys.argv[0]+"?url=Asetukset&mode=4"
-    listfolder = xbmcgui.ListItem('-- '+language(1001)+' --') #1001:Asetuksia ei määritelty tai niissa on ongelma. Tarkista asetukset.
-    listfolder.setInfo('video', {'Title': language(1001)})
+    listfolder = xbmcgui.ListItem('-- '+language(30201)+' --') #Asetuksia ei määritelty tai niissa on ongelma. Tarkista asetukset.
+    listfolder.setInfo('video', {'Title': language(30201)})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
     u=sys.argv[0]+"?url=Asetukset&mode=4"
-    listfolder = xbmcgui.ListItem(language(1)) #1=asetukset
-    listfolder.setInfo('video', {'Title': language(1)})
+    listfolder = xbmcgui.ListItem(language(30101)) #asetukset
+    listfolder.setInfo('video', {'Title': language(30101)})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 # paavalikko
 def menu():
   u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/channels/')+"&mode=1"
-  listfolder = xbmcgui.ListItem(language(2)) #2='Kanavat - tänään'
-  listfolder.setInfo('video', {'Title': language(2)})
+  listfolder = xbmcgui.ListItem(language(30102)) #'Kanavat - tänään'
+  listfolder.setInfo('video', {'Title': language(30102)})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/seasonpasses/')+"&mode=1"
-  listfolder = xbmcgui.ListItem(language(3)) #3:sarjat
-  listfolder.setInfo('video', {'Title': language(3)})
+  listfolder = xbmcgui.ListItem(language(30103)) #sarjat
+  listfolder.setInfo('video', {'Title': language(30103)})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/playlist')+"&mode=2"
-  listfolder = xbmcgui.ListItem(language(4)) #4:lista
-  listfolder.setInfo('video', {'Title': language(4)})
+  listfolder = xbmcgui.ListItem(language(30104)) #lista
+  listfolder.setInfo('video', {'Title': language(30104)})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/title/elokuva')+"&mode=2"
-  listfolder = xbmcgui.ListItem(language(5)) #5:elokuvat
-  listfolder.setInfo('video', {'Title': language(5)})
+  listfolder = xbmcgui.ListItem(language(30105)) #elokuvat
+  listfolder.setInfo('video', {'Title': language(30105)})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   u=sys.argv[0]+"?url=Haku&mode=6"
-  listfolder = xbmcgui.ListItem(language(6)) #6=haku
+  listfolder = xbmcgui.ListItem(language(30106)) #haku
   listfolder.setInfo('video', {'Title': language(6)})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   u=sys.argv[0]+"?url=Asetukset&mode=4"
-  listfolder = xbmcgui.ListItem(language(1)) #1:asetukset
-  listfolder.setInfo('video', {'Title': language(1)})
+  listfolder = xbmcgui.ListItem(language(30101)) #asetukset
+  listfolder.setInfo('video', {'Title': language(30101)})
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
-  vko=language(7).split(',') #7="manantai,tiistai,..."
+  vko=language(30107).split(',') #"maanantai,tiistai,..."
   t=time.time()
   for i in range(1,29):
     tt=time.localtime(t-86400*i)
@@ -194,12 +196,12 @@ def listprograms(url):
       content = opener.open(request).read()
   except urllib2.HTTPError,e:
     if e.code == 401:
-      desc=" ("+language(1002)+")" #1002:virheellinen käyttäjätunnus tai salasana)"
+      desc=" ("+language(30202)+")" #virheellinen käyttäjätunnus tai salasana)"
     else:
       desc=""
     u=sys.argv[0]
-    listfolder = xbmcgui.ListItem(language(1003)+' '+str(e.code)+desc) #1003:www-pyyntö ei onnistunut
-    listfolder.setInfo('video', {'Title': language(1003)+' '+str(e.code)+desc})
+    listfolder = xbmcgui.ListItem(language(30203)+' '+str(e.code)+desc) #www-pyyntö ei onnistunut
+    listfolder.setInfo('video', {'Title': language(30203)+' '+str(e.code)+desc})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=0)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return
@@ -229,7 +231,7 @@ def listprograms(url):
     except:
       pat=[]
       pat.append("")
-      ptit=ptit+" "+language(1004) #1004:-TALLENNE PUUTTUU-
+      ptit=ptit+" "+language(30204) #-TALLENNE PUUTTUU-
     if len(pdes)>80:
       shortdes=pdes[:80]+'...'
     else:
@@ -254,29 +256,29 @@ def listprograms(url):
         listitem.setThumbnailImage('http://%s:%s@www.tvkaista.com/resources/recordings/screengrabs/%s.jpg' % (\
             myusername, mypassword, pid[0]))
         if url.find('/feed/playlist') > 0:
-          label=language(9) #9:'Poista Listalta'
+          label=language(30109) #'Poista Listalta'
           mode=9
         else:
-          label=language(8) #8:'Lisää Listalle'
+          label=language(30108) #'Lisää Listalle'
           mode=8
         if url.find('/feed/seasonpasses/') > 0:
           se = re.compile(r"/feed/seasonpasses/([0-9]+)", re.IGNORECASE).findall(url)
-          label2=language(11) #11:'Poista Sarjoista'
+          label2=language(30111) #'Poista Sarjoista'
           mode2=11
           id2=se[0]
         else:
-          label2=language(10) #10:'Lisää Sarjoihin'
+          label2=language(30110) #'Lisää Sarjoihin'
           mode2=10
           id2=pid[0]
         menuitems=[
-            (language(16),'XBMC.Action(Info)',), #16:Ohjelman tiedot
+            (language(30116),'XBMC.Action(Info)',), #Ohjelman tiedot
             (label,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode,pid[0] ),),
             (label2,"XBMC.RunPlugin(%s?mode=%d&url=%s)"%(sys.argv[0],mode2,id2 ),),
         ]
         if url.find('/feed/search') == -1 and url.find('/feed/seasonpasses/') == -1:
           search=ptit.split(':')[0].encode('utf-8')
           #double encoding cos it gets decoded twice.
-          menuitems.append((language(17),'XBMC.Container.Update(%s?mode=%d&url=%s)'% #17:Etsi samannimisiä
+          menuitems.append((language(30117),'XBMC.Container.Update(%s?mode=%d&url=%s)'% #Etsi samannimisiä
             (sys.argv[0],2,'http://www.tvkaista.com/feed/search/title/'+urllib.quote_plus(urllib.quote_plus(search)) ),))
         listitem.addContextMenuItems(menuitems, True )
     except:
@@ -306,12 +308,12 @@ def listdates(date):
       content = opener.open(request).read()
   except urllib2.HTTPError,e:
     if e.code == 401:
-      desc=" ("+language(1002)+")" #virheellinen käyttäjätunnus tai salasana
+      desc=" ("+language(30202)+")" #virheellinen käyttäjätunnus tai salasana
     else:
       desc=""
     u=sys.argv[0]
-    listfolder = xbmcgui.ListItem(' '+language(1003)+str(e.code)+desc) #1003:www-pyyntö ei onnistunut
-    listfolder.setInfo('video', {'Title': language(1003)+' '+str(e.code)+desc})
+    listfolder = xbmcgui.ListItem(' '+language(30203)+str(e.code)+desc) #www-pyyntö ei onnistunut
+    listfolder.setInfo('video', {'Title': language(30203)+' '+str(e.code)+desc})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return
@@ -351,12 +353,12 @@ def listfeeds(url):
       content = opener.open(request).read()
   except urllib2.HTTPError,e:
     if e.code == 401:
-      desc=" ("+language(1002)+")" #1002:virheellinen käyttäjätunnus tai salasana
+      desc=" ("+language(30202)+")" #virheellinen käyttäjätunnus tai salasana
     else:
       desc=""
     u=sys.argv[0]
-    listfolder = xbmcgui.ListItem(language(1003)+' '+str(e.code)+desc)  #1003:www-pyyntö ei onnistunut
-    listfolder.setInfo('video', {'Title': language(1003)+' '+str(e.code)+desc})
+    listfolder = xbmcgui.ListItem(language(30203)+' '+str(e.code)+desc)  #www-pyyntö ei onnistunut
+    listfolder.setInfo('video', {'Title': language(30203)+' '+str(e.code)+desc})
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
     return
@@ -403,17 +405,17 @@ def search():
 #list searches that are stored in plugin settings
 def listsearches():
   u=sys.argv[0]+"?url=Haku&mode=3"
-  listfolder = xbmcgui.ListItem(language(18)) #18:'Uusi haku'
+  listfolder = xbmcgui.ListItem(language(30118)) #'Uusi haku'
   xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   for i in tvkaista_addon.getSetting("searches").splitlines():
     u=sys.argv[0]+"?url="+urllib.quote_plus('http://www.tvkaista.com/feed/search/either/'+urllib.quote_plus(i))+"&mode=2"
-    listfolder = xbmcgui.ListItem(language(6)+': '+i) #6:haku
+    listfolder = xbmcgui.ListItem(language(30106)+': '+i) #haku
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   if(tvkaista_addon.getSetting("searches") != ""):
     u=sys.argv[0]+"?url=Haku&mode=7"
-    listfolder = xbmcgui.ListItem(language(19)) #19:'Poista viimeiset haut'
+    listfolder = xbmcgui.ListItem(language(30119)) #'Poista viimeiset haut'
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, listfolder, isFolder=1)
 
   xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -421,9 +423,9 @@ def listsearches():
 #delete stored searches
 def delsearches():
   dialog = xbmcgui.Dialog()
-  if(dialog.yesno('Tvkaista', language(20))): #20:'Poistetaanko viimeiset haut?'
+  if(dialog.yesno('Tvkaista', language(30120))): #'Poistetaanko viimeiset haut?'
     tvkaista_addon.setSetting("searches","")
-    dialog.ok('Tvkaista', language(21)) #21:'Viimeiset haut poistettu.'
+    dialog.ok('Tvkaista', language(30121)) #'Viimeiset haut poistettu.'
 
 #adds/removes programs to/from playlist and seasonpasses
 #TODO: convert to tvkaista supported api instead of the current hack
@@ -439,23 +441,23 @@ def addremove(action,id):
     if action==1:
       request = urllib2.Request("http://www.tvkaista.com/recordings/?action=addtoplaylist&id=%s"%id, headers=MYHEADERS)
       r = opener.open(request)
-      dialog.ok('Tvkaista', language(12)) #12:'Ohjelma lisätty listalle.'
+      dialog.ok('Tvkaista', language(30112)) #'Ohjelma lisätty listalle.'
     elif action==2:
       request = urllib2.Request("http://www.tvkaista.com/recordings/?action=removefromplaylist&id=%s"%id, headers=MYHEADERS)
       r = opener.open(request)
-      dialog.ok('Tvkaista', language(13)) #13:'Ohjelma poistettu listalta.'
+      dialog.ok('Tvkaista', language(30113)) #'Ohjelma poistettu listalta.'
     elif action==3:
       request = urllib2.Request("http://www.tvkaista.com/recordings/?action=addseasonpass&id=%s"%id, headers=MYHEADERS)
       r = opener.open(request)
-      dialog.ok('Tvkaista', language(14)) #14:Ohjelma lisätty sarjoihin
+      dialog.ok('Tvkaista', language(30114)) #Ohjelma lisätty sarjoihin
     elif action==4:
       request = urllib2.Request("http://www.tvkaista.com/recordings/?action=removeseasonpass&spid=%s"%id, headers=MYHEADERS)
       r = opener.open(request)
-      dialog.ok('Tvkaista', language(15)) #15:'Ohjelma poistettu sarjoista.'
+      dialog.ok('Tvkaista', language(30115)) #'Ohjelma poistettu sarjoista.'
     else:
-      dialog.ok('Tvkaista', language(1005)) #'Ohjelmavirhe!'
+      dialog.ok('Tvkaista', language(30205)) #'Ohjelmavirhe!'
   except Error:
-      dialog.ok('Tvkaista', language(1006)) #'Toiminto ei onnistunut!'
+      dialog.ok('Tvkaista', language(30206)) #'Toiminto ei onnistunut!'
 
 #main program
 

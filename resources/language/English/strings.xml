@@ -9,35 +9,35 @@
     <string id="30007">see www.tvkaista.com/speedtest.html</string>
 
 
-	<string id="1">Settings</string>
-	<string id="2">Programs - today</string>
-	<string id="3">Series</string>
-	<string id="4">List</string>
-	<string id="5">Movies</string>
-	<string id="6">Search</string>
-	<string id="7">Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday</string>
+	<string id="30101">Settings</string>
+	<string id="30102">Programs - today</string>
+	<string id="30103">Series</string>
+	<string id="30104">List</string>
+	<string id="30105">Movies</string>
+	<string id="30106">Search</string>
+	<string id="30107">Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday</string>
 
-	<string id="8">Add to list</string>
-	<string id="9">Remove from list</string>
-	<string id="10">Subscribe to series</string>
-	<string id="11">Unsubscribe from series</string>
-	<string id="12">Program added to list.</string>
-	<string id="13">Program removed from list.</string>
-	<string id="14">Subscribed to series.</string>
-	<string id="15">Unsubscribed from series.</string>
-	<string id="16">Program information</string>
-	<string id="17">Search for programs with same name</string>
-	<string id="18">New search</string>
-	<string id="19">Clear search history</string>
-	<string id="20">Are you sure you want to clear the search history?</string>
-	<string id="21">Search history cleared</string>
+	<string id="30108">Add to list</string>
+	<string id="30109">Remove from list</string>
+	<string id="30110">Subscribe to series</string>
+	<string id="30111">Unsubscribe from series</string>
+	<string id="30112">Program added to list.</string>
+	<string id="30113">Program removed from list.</string>
+	<string id="30114">Subscribed to series.</string>
+	<string id="30115">Unsubscribed from series.</string>
+	<string id="30116">Program information</string>
+	<string id="30117">Search for programs with same name</string>
+	<string id="30118">New search</string>
+	<string id="30119">Clear search history</string>
+	<string id="30120">Are you sure you want to clear the search history?</string>
+	<string id="30121">Search history cleared</string>
 
 
-	<string id="1001">Settings are not defined or have a problem. Check settings.</string>
-	<string id="1002">Incorrect username or password.</string>
-	<string id="1003">web request was unsuccessful</string>
-	<string id="1004">-RECORD MISSING-</string>
-	<string id="1005">Bug!</string>
-	<string id="1006">The function does not work!</string>
+	<string id="30201">Settings are not defined or have a problem. Check settings.</string>
+	<string id="30202">Incorrect username or password.</string>
+	<string id="30203">web request was unsuccessful</string>
+	<string id="30204">-RECORD MISSING-</string>
+	<string id="30205">Bug!</string>
+	<string id="30206">The function does not work!</string>
 
 </strings>

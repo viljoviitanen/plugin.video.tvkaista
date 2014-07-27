@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <string id="30000">TVkaista Username</string>
     <string id="30001">TVkaista Password</string>
@@ -5,5 +6,38 @@
     <string id="30004">Search</string>
     <string id="30005">Favourites</string>
     <string id="30006">set proxy server from website</string>
-    <string id="30007">see www.tvkaista.fi/speedtest.html</string>
+    <string id="30007">see www.tvkaista.com/speedtest.html</string>
+
+
+	<string id="1">Settings</string>
+	<string id="2">Programs - today</string>
+	<string id="3">Series</string>
+	<string id="4">List</string>
+	<string id="5">Movies</string>
+	<string id="6">Search</string>
+	<string id="7">Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday</string>
+
+	<string id="8">Add to list</string>
+	<string id="9">Remove from list</string>
+	<string id="10">Subscribe to series</string>
+	<string id="11">Unsubscribe from series</string>
+	<string id="12">Program added to list.</string>
+	<string id="13">Program removed from list.</string>
+	<string id="14">Subscribed to series.</string>
+	<string id="15">Unsubscribed from series.</string>
+	<string id="16">Program information</string>
+	<string id="17">Search for programs with same name</string>
+	<string id="18">New search</string>
+	<string id="19">Clear search history</string>
+	<string id="20">Are you sure you want to clear the search history?</string>
+	<string id="21">Search history cleared</string>
+
+
+	<string id="1001">Settings are not defined or have a problem. Check settings.</string>
+	<string id="1002">Incorrect username or password.</string>
+	<string id="1003">web request was unsuccessful</string>
+	<string id="1004">-RECORD MISSING-</string>
+	<string id="1005">Bug!</string>
+	<string id="1006">The function does not work!</string>
+
 </strings>
